@@ -15,7 +15,7 @@ export function coordinate(input) {
   if (input.remote_outcome === 'UNKNOWN') return { result: 'RECONCILE', owner: 'effect owner', correlation_id: input.correlation_id, external_effect: false };
   if (input.remote_outcome && !['NOT_ATTEMPTED', 'CONFIRMED'].includes(input.remote_outcome)) return blocked('invalid-remote-outcome');
   if (input.requested_effect === 'negotiate') return blocked('human-led-negotiation', 'competent human');
-  if (input.requested_effect === 'external-contact' || input.requested_effect === 'appointment') return { result: 'HANDOFF', owner: 'Customer Service', provider: 'woia-communications', correlation_id: input.correlation_id, external_effect: false };
+  if (input.requested_effect === 'external-contact' || input.requested_effect === 'appointment') return { result: 'HANDOFF', owner: 'Customer Service', provider: input.requested_effect === 'appointment' ? 'woia-scheduling' : 'woia-communications', correlation_id: input.correlation_id, external_effect: false };
   if (input.requested_effect === 'payment' || input.requested_effect === 'financial-posting') return { result: 'HANDOFF', owner: 'Finance', correlation_id: input.correlation_id, external_effect: false };
   if (input.requested_effect === 'internal-contact') {
     if (input.recipient?.kind !== 'internal-staff' || input.recipient.authenticated !== true || input.recipient.authorized !== true) return blocked('internal-recipient-not-qualified', 'Customer Service');
