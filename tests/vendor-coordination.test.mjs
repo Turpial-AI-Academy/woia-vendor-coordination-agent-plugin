@@ -3,14 +3,16 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { coordinate } from '../skills/woia-vendor-coordination/scripts/coordinate.mjs';
 
-const base = () => ({ stage: 'scope', need_id: 'need-1', scope_version: 'scope-3', outcome_owner: 'Operations', correlation_id: 'request-1', need_accepted: true, source_authority: { status: 'ACCEPTED', fresh: true, conflict: false, version: 'map-1', source_ref: 'accepted-source' } });
+const base = () => ({ stage: 'scope', org_id:'org-1', purpose:'vendor-coordination', actor:{id:'internal-owner',authenticated:true,authorized:true,org_id:'org-1',need_id:'need-1',scope_version:'scope-3',purpose:'vendor-coordination'}, need_id: 'need-1', scope_version: 'scope-3', outcome_owner: 'Operations', correlation_id: 'request-1', need_accepted: true, source_authority: {org_id:'org-1',need_id:'need-1',scope_version:'scope-3', status: 'ACCEPTED', fresh: true, conflict: false, version: 'map-1', source_ref: 'accepted-source' } });
 test('root identity and exact Core dependency', () => {
   const manifest = JSON.parse(readFileSync(new URL('../dev.woia/manifest.json', import.meta.url)));
   assert.equal(manifest.schema, 'dev.woia.department-orchestrator/v1');
   assert.deepEqual(manifest.requires_plugins, [{name: 'woia-core', minimum_version: '0.5.3'}]);
 });
 test('accepted scope prepares coordination without executing effects', () => assert.deepEqual(coordinate(base()), {result:'COORDINATION_READY',stage:'scope',provider:'woia-vendor-management',need_id:'need-1',correlation_id:'request-1',external_effect:false}));
-for (const field of ['need_id','scope_version','outcome_owner','correlation_id']) test(`missing ${field} blocks`, () => { const input=base(); delete input[field]; assert.equal(coordinate(input).result,'BLOCKED'); });
+for (const field of ['org_id','purpose','need_id','scope_version','outcome_owner','correlation_id']) test(`missing ${field} blocks`, () => { const input=base(); delete input[field]; assert.equal(coordinate(input).result,'BLOCKED'); });
+for(const patch of [{authenticated:false},{authorized:false},{id:''},{org_id:'other'},{need_id:'other'},{scope_version:'old'},{purpose:'other'}]) test(`actor scope rejects ${JSON.stringify(patch)}`,()=>{const input=base();Object.assign(input.actor,patch);assert.equal(coordinate(input).result,'BLOCKED');});
+for(const patch of [{org_id:'other'},{need_id:'other'},{scope_version:'old'}]) test(`source scope rejects ${JSON.stringify(patch)}`,()=>{const input=base();Object.assign(input.source_authority,patch);assert.equal(coordinate(input).result,'BLOCKED');});
 test('sender need without acceptance blocks',()=>assert.equal(coordinate({...base(),need_accepted:false}).result,'BLOCKED'));
 for (const patch of [{status:'OBSERVED'},{fresh:false},{conflict:true},{version:''},{source_ref:''}]) test(`unresolved source ${JSON.stringify(patch)} blocks`,()=>{const input=base();Object.assign(input.source_authority,patch);assert.equal(coordinate(input).result,'BLOCKED');});
 test('unknown remote effect reconciles before contact retry',()=>assert.equal(coordinate({...base(),requested_effect:'external-contact',remote_outcome:'UNKNOWN'}).result,'RECONCILE'));
