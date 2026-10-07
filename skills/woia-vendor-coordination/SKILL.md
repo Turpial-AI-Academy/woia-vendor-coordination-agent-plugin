@@ -1,55 +1,21 @@
 ---
 name: woia-vendor-coordination
-description: Generic Vendor Management department coordination with scoped vendor qualification and commitments.
+description: Coordinate vendor demand, qualification, traceable quotes, scoped selection and fulfillment; use for Vendor Management work without duplicating provider facts or granting contact/payment authority.
 license: MIT
 ---
 
-# woia-vendor-coordination
+# Vendor coordination
+
+One generic Vendor Management department root, not a vendor capability provider or master. Requires WOIA Core v0.5.3 or later. Load [accepted method and boundaries](references/vendor-coordination.md) when planning demand, vendor alternatives, quote comparison, selection, commitments or delivery/performance.
 
 ## Operating flow
 
-~~~text
-DISCOVER -> DECIDE -> IMPLEMENT -> VALIDATE -> REPORT
-~~~
+1. Recover accepted need, exact scope, outcome owner, Source Authority Map and existing Core work.
+2. Resolve identity and scoped qualification through shared Identity/Vendor Management providers; preferred status does not grant authority.
+3. Preserve original quote Documents, versions and unknowns. Prepare comparable evidence under accepted criteria, never invented prices/weights/quote counts. Customer Service executes external requests and appointments; direct internal staff contact requires authentication and authority.
+4. Prepare selection/commitment under exact current competent decision, scope and terms. Human-led negotiation stays human-led. Financial consequences route to Finance; physical acceptance to the competent outcome owner.
+5. Follow fulfillment and performance with evidence, competent acceptance and residual owners. Close only fulfilled vendor contribution, never erase external commitments via Task cancellation.
 
-## Purpose
+Use [coordinate.mjs](scripts/coordinate.mjs) for pure preflight decisions; it executes no provider command and persists no business facts. BLOCKED retains owner/next contribution; UNKNOWN remote result requires reconciliation before retry. Core owns correlated receiver-owned work, Effects/receipts, Due Work and machine collaboration. Delivery does not imply acceptance or inherited authority.
 
-Coordinate accepted vendor demand, qualification, quotations, selection and evidence-backed fulfillment without owning provider facts or financial effects.
-
-## Minimum sufficient evidence
-
-Use a bounded path when an authoritative existing artifact/evidence set is healthy and the requested change is local and understood:
-
-1. identify the artifact/evidence, source candidate, and affected surface;
-2. load only supporting context and references needed for that surface;
-3. amend or re-evaluate the smallest coherent unit;
-4. verify affected behavior plus mandatory cross-cutting invariants;
-5. preserve unrelated valid artifacts/evidence and report what changed.
-
-Use the deep path for a new artifact, unclear scope or contradictory evidence, public API/event/schema changes, persisted data/migrations, authentication/authorization/secrets/signing/trust boundaries, deployment/rollback/availability risk, cross-provider dependency restructuring, unhealthy or unfamiliar conventions, missing durable required evidence, or a failed invariant that invalidates reused evidence. Load the references/checklists needed by those triggers and retain all required safety validation.
-
-## Discover
-
-Inspect actual repository/system state before changing it. Locate authoritative artifacts/evidence and identify affected standards, constraints, supported platforms, integrations, and user requirements. Expand context when a dependency, uncertainty, or deep-path trigger requires it.
-
-## Decide
-
-Select the smallest strategy that satisfies the capability. Preserve healthy existing standards. Do not infer policy from the author's workspace.
-
-## Implement
-
-Apply only authorized changes. Keep domain semantics independent from unrelated tooling.
-
-## Validate
-
-Run capability-appropriate checks and verify changed state. Reuse evidence only when it is durable, inspectable evidence of actual execution/observation with an identifiable candidate, checked surface, relevant inputs/environment, and outcome. Independently establish that it satisfies the gate being owned; prose claims or recollection are not execution evidence.
-
-A later mutation invalidates the checks whose coverage or inputs it affects. Rerun those checks and mandatory related invariants; preserve unaffected valid evidence. Reuse expensive runtime verification across an unchanged candidate and relevant environment. A new turn/session alone does not invalidate evidence. Execute or observe relevant checks when required evidence cannot be inspected or established. Skipped/unavailable checks are not PASS.
-
-## Report
-
-Report current state, source candidate, affected surface, decisions, changes, and exact usage/maintenance commands. Distinguish reusable evidence, invalidated evidence, freshly established evidence, and assumptions/inferences that are not evidence. Include remaining risks and uncertainties.
-
-## Detailed references
-
-Add focused files under `references/` only when more detail is needed and give each reference a concrete scope/risk/ambiguity load trigger. Load triggered safety references; a bounded amendment does not require every reference or full template replay. Add scripts/assets only when they materially improve deterministic execution.
+This root contains no Real Estate delta, universal purchasing backend, private policies, vendor master, financial posting or external dispatch. Actual adapters, Source Authority Map, organization grants and runtime conformance remain qualification inputs. Report engineering gates separately from Operator E2E and Production Ready.
