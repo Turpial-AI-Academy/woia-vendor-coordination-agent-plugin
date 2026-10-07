@@ -1,5 +1,6 @@
 {
   "schema": "dev.woia.department-orchestrator/v1",
+  "authoring_profile": "thin",
   "version": "0.5.0",
   "department": "vendor-management",
   "execution_model": "vendor-coordination-methodology",
