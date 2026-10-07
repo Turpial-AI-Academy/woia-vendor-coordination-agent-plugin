@@ -27,7 +27,10 @@ export function coordinate(input) {
     const decision = input.authority;
     if (!decision || decision.valid !== true || decision.competent !== true || decision.decision !== 'ACCEPTED' || !present(decision.principal) || !present(decision.decision_ref) || decision.scope_version !== input.scope_version || decision.need_id !== input.need_id || !present(input.terms_version) || decision.terms_version !== input.terms_version || input.aggregate_limit_verified !== true) return blocked('exact-authority-required', 'competent decision owner');
   }
-  if (['fulfillment', 'performance', 'close'].includes(input.stage) && (input.evidence?.original_preserved !== true || input.evidence.competent_acceptance !== true)) return blocked('competent-outcome-acceptance-required', input.outcome_owner);
+  if (['fulfillment', 'performance', 'close'].includes(input.stage)) {
+    const evidence = input.evidence;
+    if (!evidence || evidence.original_preserved !== true || evidence.competent_acceptance !== true || !present(evidence.source_ref) || !present(evidence.acceptance_ref) || evidence.owner !== input.outcome_owner || evidence.org_id !== input.org_id || evidence.need_id !== input.need_id || evidence.scope_version !== input.scope_version) return blocked('competent-outcome-acceptance-required', input.outcome_owner);
+  }
   if (input.stage === 'close' && input.residuals_resolved !== true) return blocked('owned-residuals-open', input.outcome_owner);
   return { result: 'COORDINATION_READY', stage: input.stage, provider: 'woia-vendor-management', need_id: input.need_id, correlation_id: input.correlation_id, external_effect: false };
 }

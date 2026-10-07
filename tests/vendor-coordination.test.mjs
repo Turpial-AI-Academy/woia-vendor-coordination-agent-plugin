@@ -30,6 +30,8 @@ test('preferred vendor does not grant authority',()=>assert.equal(coordinate({..
 test('aggregate limit bypass blocked',()=>assert.equal(coordinate({...selection(),aggregate_limit_verified:false}).result,'BLOCKED'));
 test('provider report does not establish acceptance',()=>assert.equal(coordinate({...base(),stage:'fulfillment',evidence:{original_preserved:true,competent_acceptance:false}}).result,'BLOCKED'));
 test('closure preserves unresolved owner residuals',()=>assert.equal(coordinate({...base(),stage:'close',evidence:{original_preserved:true,competent_acceptance:true},residuals_resolved:false}).result,'BLOCKED'));
-test('bounded contribution can close after competent acceptance',()=>assert.equal(coordinate({...base(),stage:'close',evidence:{original_preserved:true,competent_acceptance:true},residuals_resolved:true}).result,'COORDINATION_READY'));
+const acceptedEvidence=()=>({original_preserved:true,competent_acceptance:true,source_ref:'outcome-source-1',acceptance_ref:'acceptance-1',owner:'Operations',org_id:'org-1',need_id:'need-1',scope_version:'scope-3'});
+test('bounded contribution can close after competent acceptance',()=>assert.equal(coordinate({...base(),stage:'close',evidence:acceptedEvidence(),residuals_resolved:true}).result,'COORDINATION_READY'));
+for (const patch of [{source_ref:''},{acceptance_ref:''},{owner:'other'},{org_id:'other'},{need_id:'other'},{scope_version:'old'}]) test(`acceptance exact scope ${JSON.stringify(patch)} blocks`,()=>assert.equal(coordinate({...base(),stage:'close',evidence:{...acceptedEvidence(),...patch},residuals_resolved:true}).result,'BLOCKED'));
 test('unsupported financial effect never inferred',()=>assert.equal(coordinate({...base(),requested_effect:'payout'}).result,'BLOCKED'));
 test('unsupported stage rejected',()=>assert.equal(coordinate({...base(),stage:'payment-executed'}).result,'BLOCKED'));
