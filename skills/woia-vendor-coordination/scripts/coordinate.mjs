@@ -18,14 +18,14 @@ export function coordinate(input) {
   if (input.requested_effect === 'external-contact' || input.requested_effect === 'appointment') return { result: 'HANDOFF', owner: 'Customer Service', provider: input.requested_effect === 'appointment' ? 'woia-scheduling' : 'woia-communications', correlation_id: input.correlation_id, external_effect: false };
   if (input.requested_effect === 'payment' || input.requested_effect === 'financial-posting') return { result: 'HANDOFF', owner: 'Finance', correlation_id: input.correlation_id, external_effect: false };
   if (input.requested_effect === 'internal-contact') {
-    if (input.recipient?.kind !== 'internal-staff' || input.recipient.authenticated !== true || input.recipient.authorized !== true) return blocked('internal-recipient-not-qualified', 'Customer Service');
+    if (input.recipient?.kind !== 'internal-staff' || input.recipient.authenticated !== true || input.recipient.authorized !== true || input.recipient.org_id !== input.org_id || input.recipient.need_id !== input.need_id || input.recipient.scope_version !== input.scope_version || input.recipient.purpose !== input.purpose) return blocked('internal-recipient-not-qualified', 'Customer Service');
     return { result: 'HANDOFF', owner: 'Communications/internal', correlation_id: input.correlation_id, external_effect: false };
   }
   if (input.requested_effect !== undefined && input.requested_effect !== 'coordinate') return blocked('unsupported-effect');
   if (input.stage === 'quotation' && (input.quote?.original_preserved !== true || !present(input.quote.version) || input.quote.comparable !== true || input.quote.unknowns_resolved !== true)) return blocked('quote-not-comparable', 'Vendor Management provider');
   if (['selection', 'commitment'].includes(input.stage)) {
     const decision = input.authority;
-    if (!decision || decision.valid !== true || decision.competent !== true || decision.decision !== 'ACCEPTED' || !present(decision.principal) || !present(decision.decision_ref) || decision.scope_version !== input.scope_version || decision.need_id !== input.need_id || !present(input.terms_version) || decision.terms_version !== input.terms_version || input.aggregate_limit_verified !== true) return blocked('exact-authority-required', 'competent decision owner');
+    if (!decision || decision.valid !== true || decision.competent !== true || decision.decision !== 'ACCEPTED' || !present(decision.principal) || !present(decision.decision_ref) || decision.org_id !== input.org_id || decision.actor_id !== actor.id || decision.purpose !== input.purpose || decision.scope_version !== input.scope_version || decision.need_id !== input.need_id || !present(input.terms_version) || decision.terms_version !== input.terms_version || input.aggregate_limit_verified !== true) return blocked('exact-authority-required', 'competent decision owner');
   }
   if (['fulfillment', 'performance', 'close'].includes(input.stage)) {
     const evidence = input.evidence;
