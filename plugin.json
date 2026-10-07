@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "woia-vendor-coordination",
+  "version": "0.5.0",
+  "description": "Generic Vendor Management department coordination with scoped vendor qualification and commitments.",
+  "author": {
+    "name": "Turpial AI Academy",
+    "url": "https://github.com/Turpial-AI-Academy"
+  },
+  "homepage": "https://github.com/Turpial-AI-Academy/woia-vendor-coordination-agent-plugin",
+  "repository": "https://github.com/Turpial-AI-Academy/woia-vendor-coordination-agent-plugin",
+  "license": "MIT",
+  "keywords": ["agent-plugin", "woia-vendor-coordination"]
+}
