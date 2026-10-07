@@ -1,0 +1,33 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { coordinate } from '../skills/woia-vendor-coordination/scripts/coordinate.mjs';
+
+const base = () => ({ stage: 'scope', need_id: 'need-1', scope_version: 'scope-3', outcome_owner: 'Operations', correlation_id: 'request-1', need_accepted: true, source_authority: { status: 'ACCEPTED', fresh: true, conflict: false, version: 'map-1', source_ref: 'accepted-source' } });
+test('root identity and exact Core dependency', () => {
+  const manifest = JSON.parse(readFileSync(new URL('../dev.woia/manifest.json', import.meta.url)));
+  assert.equal(manifest.schema, 'dev.woia.department-orchestrator/v1');
+  assert.deepEqual(manifest.requires_plugins, [{name: 'woia-core', minimum_version: '0.5.3'}]);
+});
+test('accepted scope prepares coordination without executing effects', () => assert.deepEqual(coordinate(base()), {result:'COORDINATION_READY',stage:'scope',provider:'woia-vendor-management',need_id:'need-1',correlation_id:'request-1',external_effect:false}));
+for (const field of ['need_id','scope_version','outcome_owner','correlation_id']) test(`missing ${field} blocks`, () => { const input=base(); delete input[field]; assert.equal(coordinate(input).result,'BLOCKED'); });
+test('sender need without acceptance blocks',()=>assert.equal(coordinate({...base(),need_accepted:false}).result,'BLOCKED'));
+for (const patch of [{status:'OBSERVED'},{fresh:false},{conflict:true},{version:''},{source_ref:''}]) test(`unresolved source ${JSON.stringify(patch)} blocks`,()=>{const input=base();Object.assign(input.source_authority,patch);assert.equal(coordinate(input).result,'BLOCKED');});
+test('unknown remote effect reconciles before contact retry',()=>assert.equal(coordinate({...base(),requested_effect:'external-contact',remote_outcome:'UNKNOWN'}).result,'RECONCILE'));
+for(const effect of ['external-contact','appointment']) test(`${effect} routes to Customer Service`,()=>{const out=coordinate({...base(),requested_effect:effect});assert.equal(out.owner,'Customer Service');assert.equal(out.external_effect,false);});
+for(const effect of ['payment','financial-posting']) test(`${effect} routes to Finance`,()=>assert.equal(coordinate({...base(),requested_effect:effect}).owner,'Finance'));
+test('autonomous negotiation blocked',()=>assert.equal(coordinate({...base(),requested_effect:'negotiate'}).result,'BLOCKED'));
+for(const recipient of [{kind:'vendor',authenticated:true,authorized:true},{kind:'internal-staff',authenticated:false,authorized:true},{kind:'internal-staff',authenticated:true,authorized:false}]) test(`unqualified internal recipient ${JSON.stringify(recipient)}`,()=>assert.equal(coordinate({...base(),requested_effect:'internal-contact',recipient}).result,'BLOCKED'));
+test('authorized internal staff handoff',()=>assert.equal(coordinate({...base(),requested_effect:'internal-contact',recipient:{kind:'internal-staff',authenticated:true,authorized:true}}).result,'HANDOFF'));
+test('omitted quote evidence never becomes comparable zero',()=>assert.equal(coordinate({...base(),stage:'quotation',quote:{original_preserved:true,version:'q1',comparable:true,unknowns_resolved:false}}).result,'BLOCKED'));
+test('original current comparable quote supported',()=>assert.equal(coordinate({...base(),stage:'quotation',quote:{original_preserved:true,version:'q1',comparable:true,unknowns_resolved:true}}).result,'COORDINATION_READY'));
+const selection=()=>({...base(),stage:'selection',terms_version:'terms-1',aggregate_limit_verified:true,authority:{valid:true,competent:true,decision:'ACCEPTED',principal:'owner',decision_ref:'decision-1',scope_version:'scope-3',need_id:'need-1',terms_version:'terms-1'}});
+test('competent exact selection accepted only as coordination',()=>assert.equal(coordinate(selection()).result,'COORDINATION_READY'));
+for(const patch of [{valid:false},{competent:false},{decision:'PROPOSED'},{scope_version:'old'},{need_id:'other'},{terms_version:'changed'},{principal:''},{decision_ref:''}]) test(`authority mismatch ${JSON.stringify(patch)} blocks`,()=>{const input=selection();Object.assign(input.authority,patch);assert.equal(coordinate(input).result,'BLOCKED');});
+test('preferred vendor does not grant authority',()=>assert.equal(coordinate({...base(),stage:'commitment',preferred_vendor:true}).result,'BLOCKED'));
+test('aggregate limit bypass blocked',()=>assert.equal(coordinate({...selection(),aggregate_limit_verified:false}).result,'BLOCKED'));
+test('provider report does not establish acceptance',()=>assert.equal(coordinate({...base(),stage:'fulfillment',evidence:{original_preserved:true,competent_acceptance:false}}).result,'BLOCKED'));
+test('closure preserves unresolved owner residuals',()=>assert.equal(coordinate({...base(),stage:'close',evidence:{original_preserved:true,competent_acceptance:true},residuals_resolved:false}).result,'BLOCKED'));
+test('bounded contribution can close after competent acceptance',()=>assert.equal(coordinate({...base(),stage:'close',evidence:{original_preserved:true,competent_acceptance:true},residuals_resolved:true}).result,'COORDINATION_READY'));
+test('unsupported financial effect never inferred',()=>assert.equal(coordinate({...base(),requested_effect:'payout'}).result,'BLOCKED'));
+test('unsupported stage rejected',()=>assert.equal(coordinate({...base(),stage:'payment-executed'}).result,'BLOCKED'));

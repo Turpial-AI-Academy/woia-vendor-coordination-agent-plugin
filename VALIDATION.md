@@ -27,3 +27,9 @@ mise run release:check
 Also run `skills-ref validate` for each skill when available.
 
 No placeholder token or scaffold-only `README.plugin.md` may remain in the release candidate.
+
+## Vendor methodology regression
+
+Run `mise exec -- node --test tests/vendor-coordination.test.mjs` for deterministic negative guard cases (source/freshness/conflict, contact routing, recipient qualification, exact authority/version, unknown-effect reconciliation, quote evidence and competent outcome acceptance). Run `mise run ci:fast`, commit exact candidate, then `mise run release:check` and Ecosystem `plugin:certify-thin`.
+
+These checks evaluate local coordination contracts; provider adapters, actual machine activation and Operator E2E are NOT_RUN. Production Ready is false.
