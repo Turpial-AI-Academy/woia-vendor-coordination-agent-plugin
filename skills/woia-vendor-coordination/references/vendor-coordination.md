@@ -1,6 +1,5 @@
 # Generic Vendor Management contract
 
-Source: WOIA Real Estate ADR-0021, docs21/docs22/docs24/docs25/docs26, accepted B5; source coordination commit b716f1d1c0e2bc5ecf946043b337a2ddba4285f0. This is the generic method, with no Real Estate specialization.
 
 ## Five-part method
 

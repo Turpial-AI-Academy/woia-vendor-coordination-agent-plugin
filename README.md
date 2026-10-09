@@ -42,6 +42,6 @@ mise run release:check
 
 ## Vendor Management methodology
 
-Generic department root under accepted ADR-0021/B5. Core v0.5.7 is a hard dependency declared in dev.woia/manifest.json. See [method contract](skills/woia-vendor-coordination/references/vendor-coordination.md) and [coordination guard](skills/woia-vendor-coordination/scripts/coordinate.mjs).
+Generic department root for Vendor Management. Core v0.5.7 is a hard dependency declared in dev.woia/manifest.json. See [method contract](skills/woia-vendor-coordination/references/vendor-coordination.md) and [coordination guard](skills/woia-vendor-coordination/scripts/coordinate.mjs).
 
 Coordinates accepted need, scope-backed qualification, original quotes, exact-authority selection/commitments and attributable fulfillment/performance. Vendor Management provider retains deterministic vendor operations; Identity, Documents, Knowledge, Data, Customer Service, Finance and Operations keep their own facts and effects. No Real Estate specialization, duplicate master, autonomous negotiation, external dispatch or money posting.
