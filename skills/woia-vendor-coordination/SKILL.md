@@ -6,7 +6,7 @@ license: MIT
 
 # Vendor coordination
 
-One generic Vendor Management department root, not a vendor capability provider or master. Requires WOIA Core v0.5.6 or later. Load [accepted method and boundaries](references/vendor-coordination.md) when planning demand, vendor alternatives, quote comparison, selection, commitments or delivery/performance.
+One generic Vendor Management department root, not a vendor capability provider or master. Requires WOIA Core v0.5.7 or later. Load [accepted method and boundaries](references/vendor-coordination.md) when planning demand, vendor alternatives, quote comparison, selection, commitments or delivery/performance.
 
 ## Operating flow
 
