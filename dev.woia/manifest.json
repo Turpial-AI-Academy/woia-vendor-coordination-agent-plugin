@@ -1,9 +1,14 @@
 {
   "schema": "dev.woia.department-orchestrator/v1",
   "authoring_profile": "thin",
-  "version": "0.5.0",
+  "version": "0.5.6",
   "department": "vendor-management",
   "execution_model": "vendor-coordination-methodology",
-  "requires_plugins": [{"name": "woia-core", "minimum_version": "0.5.3"}],
+  "requires_plugins": [
+    {
+      "name": "woia-core",
+      "minimum_version": "0.5.6"
+    }
+  ],
   "contracts_directory": "skills/woia-vendor-coordination/references"
 }
